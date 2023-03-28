@@ -33,7 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         centerTitle: true,
         title: Center(
-            child: SizedBox(width: 150, child: Image.asset('assets/logo.png'))),
+            child: SizedBox(width: 128, child: Image.asset('assets/logo.png'))),
         backgroundColor: const Color(0xFFcccccc),
       ),
       body: Column(
