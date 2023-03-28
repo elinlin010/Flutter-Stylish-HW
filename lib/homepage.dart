@@ -235,9 +235,11 @@ class ItemCard extends StatelessWidget {
           ),
         ),
         onTap: () {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => ItemDetailPage(item: item.name),
-          ));
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => ItemDetailPage(item: item.name),
+            )
+          );
         });
   }
 }
