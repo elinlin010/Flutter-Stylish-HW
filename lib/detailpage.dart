@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'myappbar.dart';
+
 class ItemDetailPage extends StatefulWidget {
   const ItemDetailPage({super.key, required this.item});
 
@@ -12,8 +14,11 @@ class ItemDetailPage extends StatefulWidget {
 class _ItemDetailPageState extends State<ItemDetailPage> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [SafeArea(child: Text(widget.item))],
+    return Scaffold(
+      appBar: const MyAppBar(),
+      body: Column(
+        children: [SafeArea(child: Text(widget.item))],
+      ),
     );
   }
 }

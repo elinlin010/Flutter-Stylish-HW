@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'bigcard.dart';
 import 'detailpage.dart';
+import 'myappbar.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -28,14 +29,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        centerTitle: true,
-        title: Center(
-            child: SizedBox(width: 128, child: Image.asset('assets/logo.png'))),
-        backgroundColor: const Color(0xFFcccccc),
-      ),
+      appBar: const MyAppBar(),
       body: Column(
         children: [
           SizedBox(
