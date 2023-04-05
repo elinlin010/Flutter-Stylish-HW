@@ -11,6 +11,8 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
       // Here we take the value from the MyHomePage object that was created by
       // the App.build method, and use it to set our appbar title.
       centerTitle: true,
+      elevation: 2.0,
+      shadowColor: Colors.black,
       title: Center(
           child: SizedBox(width: 128, child: Image.asset('assets/logo.png'))),
       backgroundColor: const Color(0xFFcccccc),

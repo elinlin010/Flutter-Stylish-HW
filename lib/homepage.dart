@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-import 'Product.dart';
+import 'product.dart';
 import 'bigcard.dart';
 import 'detailpage.dart';
 import 'myappbar.dart';
@@ -219,17 +219,17 @@ class ItemCard extends StatelessWidget {
                 ),
                 Expanded(
                     child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.name,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    Text(
-                      "${item.fiat} ${item.price}",
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  ],
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.name,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        Text(
+                          "${item.fiat} ${item.price}",
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                      ],
                 ))
               ],
             ),
@@ -238,7 +238,7 @@ class ItemCard extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => ItemDetailPage(item: item.name),
+              builder: (context) => ItemDetailPage(item: item),
             )
           );
         });
