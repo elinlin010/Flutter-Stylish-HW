@@ -31,18 +31,19 @@ var selectedCount = 1;
         child: Container(
           alignment: Alignment.topCenter,
           child: SizedBox(
-            width: 360,
+            width: Platform.isIOS || Platform.isAndroid? 360 : 800,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Platform.isIOS || Platform.isAndroid?
+                  Platform.isIOS || Platform.isAndroid?
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: _getItemViews(item, context)
-                  ),
-                  // : Row(children: _getItemViews(item, context)),
+                    children: _getItemViews(item, context, true)
+                  )
+                  : 
+                  Row(children: _getItemViews(item, context, false)),
                   Row(children: [
                     Text(
                       "細部說明",
@@ -70,12 +71,20 @@ var selectedCount = 1;
   }
 
 
-  List<Widget> _getItemViews(Product item, BuildContext context) {
-    return [
-      Image(image: AssetImage(item.imgUrl)),
-      const SizedBox(width: 10),
-      createDetailView(item, context),
-    ];
+  List<Widget> _getItemViews(Product item, BuildContext context, bool isMobile) {
+    if (isMobile) {
+      return [
+        Image(image: AssetImage(item.imgUrl)),
+        const SizedBox(height: 10),
+        createDetailView(item, context),
+      ];
+    } else {
+      return [
+        Expanded(flex: 5, child: Image(image: AssetImage(item.imgUrl))),
+        const SizedBox(width: 10),
+        Expanded(flex: 5, child: createDetailView(item, context)),
+      ];
+    }
   }
 
   Padding createDetailView(Product item, BuildContext context) {
