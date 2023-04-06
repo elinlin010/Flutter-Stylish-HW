@@ -1,4 +1,4 @@
-# flutter_week_1
+# Flutter AppWorkSchool Homework
 
 A new Flutter project.
 
