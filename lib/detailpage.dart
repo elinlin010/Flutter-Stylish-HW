@@ -5,10 +5,10 @@ import 'package:flutter_week_1/product.dart';
 
 import 'myappbar.dart';
 
-late final Product item;
-
 class ItemDetailPage extends StatefulWidget {
-  const ItemDetailPage({super.key, required item});
+  const ItemDetailPage({super.key, required this.item});
+
+  final Product item;
 
   @override
   State<ItemDetailPage> createState() => _ItemDetailPageState();
@@ -33,6 +33,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
       _selectedCount = count;
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -85,13 +86,13 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
   List<Widget> _getItemViews(BuildContext context, bool isMobile) {
     if (isMobile) {
       return [
-        Image(image: AssetImage(item.imgUrl)),
+        Image(image: AssetImage(widget.item.imgUrl)),
         const SizedBox(height: 10),
         createDetailView(context),
       ];
     } else {
       return [
-        Expanded(flex: 5, child: Image(image: AssetImage(item.imgUrl))),
+        Expanded(flex: 5, child: Image(image: AssetImage(widget.item.imgUrl))),
         const SizedBox(width: 10),
         Expanded(flex: 5, child: createDetailView(context)),
       ];
@@ -99,6 +100,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
   }
 
   Padding createDetailView(BuildContext context) {
+    var item = widget.item;
     return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Column(
@@ -137,19 +139,20 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                         child: Row(children: _getCountPreview(),),
                       ),
                       const SizedBox(height: 16),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: Colors.black54,
-                          minimumSize: const Size.fromHeight(50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(0),
-                          ),
-                        ),
-                        onPressed: () { },
-                        child: const Text(
-                          '請選擇尺寸',
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      Material(
+                        color: Colors.black87,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(0),
+                          hoverColor: Colors.white24,
+                          onTap: (){},
+                          child: Container(
+                            height: 50,
+                            alignment: Alignment.center,
+                            child: const Text(
+                              '請選擇尺寸',
+                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                            ),
+                          )
                         ),
                       ),
                       const SizedBox(height: 8),
