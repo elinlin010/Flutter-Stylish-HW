@@ -5,6 +5,7 @@ import 'package:flutter_week_1/product.dart';
 
 import 'myappbar.dart';
 
+
 class ItemDetailPage extends StatefulWidget {
   const ItemDetailPage({super.key, required this.item});
 
@@ -20,20 +21,11 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
 
   ProductSize get selectedSize => _selectedSize;
   var _selectedSize = ProductSize.DEFAULT;
-  set selectedSize(ProductSize size) {
-    setState(() {
-      _selectedSize = size;
-    });
-  }
+  set selectedSize(ProductSize size) => setState(() => _selectedSize = size);
 
   int get selectedCount => _selectedCount;
   var _selectedCount = 1;
-  set selectedCount(int count) {
-    setState(() {
-      _selectedCount = count;
-    });
-  }
-
+  set selectedCount(int count) => setState(() =>_selectedCount = count);
 
   @override
   Widget build(BuildContext context) {
@@ -167,76 +159,37 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
     previews.add(const Text("尺寸"));
     previews.add(const VerticalDivider(thickness: 1, color: Colors.grey));
     previews.add(const SizedBox(width: 8));
-    previews.add(
-      GestureDetector(
-        onTap: () => selectedSize = ProductSize.S,
-        child: Container(
-            height: 24,
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: selectedSize == ProductSize.S? Colors.lime:Colors.blueGrey,
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.grey,
-                  offset: Offset(0.0, 1.0), //(x,y)
-                  blurRadius: 6.0,
-                ),
-              ],
-            ),
-            alignment: Alignment.center,
-            child: const Text("S", style: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600)),
-        ),
-      )
-    );
+    previews.add(createSizeBox(ProductSize.S));
     previews.add(const SizedBox(width: 8));
-    previews.add(
-      GestureDetector(
-        onTap: () => selectedSize = ProductSize.M,
-        child: Container(
-            height: 24,
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: selectedSize == ProductSize.M? Colors.lime:Colors.blueGrey,
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.grey,
-                  offset: Offset(0.0, 1.0), //(x,y)
-                  blurRadius: 6.0,
-                ),
-              ],
-            ),
-            alignment: Alignment.center,
-            child: const Text("M", style: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600)),
-        ),
-      )
-    );
+    previews.add(createSizeBox(ProductSize.M));
     previews.add(const SizedBox(width: 8));
-    previews.add(
-      GestureDetector(
-        onTap: () => selectedSize = ProductSize.L,
-        child: Container(
-            height: 24,
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: selectedSize == ProductSize.L? Colors.lime:Colors.blueGrey,
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.grey,
-                  offset: Offset(0.0, 1.0), //(x,y)
-                  blurRadius: 6.0,
-                ),
-              ],
-            ),
-            alignment: Alignment.center,
-            child: const Text("L", style: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600)),
-        ),
-      )
-    );
+    previews.add(createSizeBox(ProductSize.L));
     return previews;
   }
+
+  GestureDetector createSizeBox(ProductSize size) {
+    return GestureDetector(
+      onTap: () => selectedSize = size,
+      child: Container(
+          height: 24,
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: selectedSize == size? Colors.lime:Colors.blueGrey,
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.grey,
+                offset: Offset(0.0, 1.0), //(x,y)
+                blurRadius: 6.0,
+              ),
+            ],
+          ),
+          alignment: Alignment.center,
+          child: Text(size.name, style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600)),
+      ),
+    );
+  }
+
   List<Widget> _getColorPreview() {
     List<Widget> previews = <Widget>[];
     previews.add(const Text("顏色"));
