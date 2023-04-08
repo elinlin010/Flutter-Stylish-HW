@@ -5,10 +5,10 @@ import 'package:flutter_week_1/product.dart';
 
 import 'myappbar.dart';
 
-class ItemDetailPage extends StatefulWidget {
-  const ItemDetailPage({super.key, required this.item});
+late final Product item;
 
-  final Product item;
+class ItemDetailPage extends StatefulWidget {
+  const ItemDetailPage({super.key, required item});
 
   @override
   State<ItemDetailPage> createState() => _ItemDetailPageState();
@@ -17,6 +17,7 @@ class ItemDetailPage extends StatefulWidget {
 enum ProductSize { DEFAULT, S, M, L }
 
 class _ItemDetailPageState extends State<ItemDetailPage> {
+
   ProductSize get selectedSize => _selectedSize;
   var _selectedSize = ProductSize.DEFAULT;
   set selectedSize(ProductSize size) {
@@ -30,7 +31,6 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final Product item = widget.item;
     return Scaffold(
       appBar: const MyAppBar(),
       body: SingleChildScrollView(
@@ -47,10 +47,10 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                   Platform.isIOS || Platform.isAndroid?
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: _getItemViews(item, context, true)
+                    children: _getItemViews(context, true)
                   )
                   : 
-                  Row(children: _getItemViews(item, context, false)),
+                  Row(children: _getItemViews(context, false)),
                   Row(children: [
                     Text(
                       "細部說明",
@@ -77,23 +77,23 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
     );
   }
 
-  List<Widget> _getItemViews(Product item, BuildContext context, bool isMobile) {
+  List<Widget> _getItemViews(BuildContext context, bool isMobile) {
     if (isMobile) {
       return [
         Image(image: AssetImage(item.imgUrl)),
         const SizedBox(height: 10),
-        createDetailView(item, context),
+        createDetailView(context),
       ];
     } else {
       return [
         Expanded(flex: 5, child: Image(image: AssetImage(item.imgUrl))),
         const SizedBox(width: 10),
-        Expanded(flex: 5, child: createDetailView(item, context)),
+        Expanded(flex: 5, child: createDetailView(context)),
       ];
     }
   }
 
-  Padding createDetailView(Product item, BuildContext context) {
+  Padding createDetailView(BuildContext context) {
     return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Column(
@@ -121,7 +121,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                       ),
                       IntrinsicHeight(
                         child: Row(
-                          children: _getColorPreview("顏色", item.colors),),
+                          children: _getColorPreview(),),
                       ),
                       const SizedBox(height: 16),
                       IntrinsicHeight(
@@ -129,7 +129,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                       ),
                       const SizedBox(height: 16),
                       IntrinsicHeight(
-                        child: Row(children: _getCountPreview("數量", selectedCount, setSelectedCount),),
+                        child: Row(children: _getCountPreview(),),
                       ),
                       const SizedBox(height: 16),
                       ElevatedButton(
@@ -229,89 +229,87 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
     );
     return previews;
   }
-}
-
-List<Widget> _getColorPreview(String label, List<Color> colors) {
-  List<Widget> previews = <Widget>[];
-  previews.add(Text(label));
-  previews.add(const VerticalDivider(thickness: 1, color: Colors.grey));
-  for (var c in colors) {
-    previews.add(const SizedBox(width: 8));
-    previews.add(Container(width: 20, color: c));
-    previews.add(const SizedBox(width: 8));
+  List<Widget> _getColorPreview() {
+    List<Widget> previews = <Widget>[];
+    previews.add(const Text("顏色"));
+    previews.add(const VerticalDivider(thickness: 1, color: Colors.grey));
+    for (var c in widget.item.colors) {
+      previews.add(const SizedBox(width: 8));
+      previews.add(Container(width: 20, color: c));
+      previews.add(const SizedBox(width: 8));
+    }
+    return previews;
   }
-  return previews;
-}
-
-List<Widget> _getCountPreview(String label, int count, Function onTap) {
-  List<Widget> previews = <Widget>[];
-  previews.add(Text(label));
-  previews.add(const VerticalDivider(thickness: 1, color: Colors.grey));
-  previews.add(
-    Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            GestureDetector(
-              onTap: () => onTap(count == 0? 0 : count - 1),
-              child: Container(
-                  height: 24,
-                  width: 24,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.black,
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.grey,
-                        offset: Offset(0.0, 1.0), //(x,y)
-                        blurRadius: 3.0,
-                      ),
-                    ],
-                  ),
-                  alignment: Alignment.center,
-                  child: const Text("-", style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w600)),
-              ),
-            ),
-            Flexible(
-              child: SizedBox(
-                height: 24,
-                child: TextField(
-                  textAlign: TextAlign.center,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(borderSide: BorderSide.none),
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                  controller: TextEditingController()..text = count.toString(),
-                  //onSubmitted: (text) => onTap(int.tryParse(text) ?? count.toString()),
+  List<Widget> _getCountPreview() {
+    List<Widget> previews = <Widget>[];
+    previews.add(const Text("數量"));
+    previews.add(const VerticalDivider(thickness: 1, color: Colors.grey));
+    previews.add(
+      Expanded(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              GestureDetector(
+                onTap: () => setSelectedCount(selectedCount == 0? 0 : selectedCount - 1),
+                child: Container(
+                    height: 24,
+                    width: 24,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.black,
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.grey,
+                          offset: Offset(0.0, 1.0), //(x,y)
+                          blurRadius: 3.0,
+                        ),
+                      ],
+                    ),
+                    alignment: Alignment.center,
+                    child: const Text("-", style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w600)),
                 ),
               ),
-            ),
-            GestureDetector(
-              onTap: () => onTap(count + 1),
-              child: Container(
+              Flexible(
+                child: SizedBox(
                   height: 24,
-                  width: 24,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.black,
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.grey,
-                        offset: Offset(0.0, 1.0), //(x,y)
-                        blurRadius: 3.0,
-                      ),
-                    ],
+                  child: TextField(
+                    textAlign: TextAlign.center,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(borderSide: BorderSide.none),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    controller: TextEditingController()..text = selectedCount.toString(),
+                    //onSubmitted: (text) => onTap(int.tryParse(text) ?? count.toString()),
                   ),
-                  alignment: Alignment.center,
-                  child: const Text("+", style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w600)),
+                ),
               ),
+              GestureDetector(
+                onTap: () => setSelectedCount(selectedCount + 1),
+                child: Container(
+                    height: 24,
+                    width: 24,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.black,
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.grey,
+                          offset: Offset(0.0, 1.0), //(x,y)
+                          blurRadius: 3.0,
+                        ),
+                      ],
+                    ),
+                    alignment: Alignment.center,
+                    child: const Text("+", style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w600)),
+                ),
+          ),
+            ],
+          ),
         ),
-          ],
-        ),
-      ),
-    ));
+      ));
 
-  return previews;
+    return previews;
+  }
 }
