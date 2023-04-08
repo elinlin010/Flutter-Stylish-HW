@@ -26,8 +26,13 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
     });
   }
 
-  var selectedCount = 1;
-  void setSelectedCount(int count) => setState(() => selectedCount = count);
+  int get selectedCount => _selectedCount;
+  var _selectedCount = 1;
+  set selectedCount(int count) {
+    setState(() {
+      _selectedCount = count;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -252,7 +257,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               GestureDetector(
-                onTap: () => setSelectedCount(selectedCount == 0? 0 : selectedCount - 1),
+                onTap: () => selectedCount == 0? {} : selectedCount--,
                 child: Container(
                     height: 24,
                     width: 24,
@@ -281,12 +286,11 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                       contentPadding: EdgeInsets.zero,
                     ),
                     controller: TextEditingController()..text = selectedCount.toString(),
-                    //onSubmitted: (text) => onTap(int.tryParse(text) ?? count.toString()),
                   ),
                 ),
               ),
               GestureDetector(
-                onTap: () => setSelectedCount(selectedCount + 1),
+                onTap: () => selectedCount++,
                 child: Container(
                     height: 24,
                     width: 24,
