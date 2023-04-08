@@ -18,8 +18,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var campaignImages = _getCampaigns();
-  var lists = _getProductLists();
+  final campaignImages = _getCampaigns();
+  final lists = _getProductLists();
 
   @override
   Widget build(BuildContext context) {

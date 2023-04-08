@@ -14,11 +14,18 @@ class ItemDetailPage extends StatefulWidget {
   State<ItemDetailPage> createState() => _ItemDetailPageState();
 }
 
-class _ItemDetailPageState extends State<ItemDetailPage> {
-  var selectedSize = "";
-  void setSelectedSize(String size) => setState(() => selectedSize = size);
+enum ProductSize { DEFAULT, S, M, L }
 
-var selectedCount = 1;
+class _ItemDetailPageState extends State<ItemDetailPage> {
+  ProductSize get selectedSize => _selectedSize;
+  var _selectedSize = ProductSize.DEFAULT;
+  set selectedSize(ProductSize size) {
+    setState(() {
+      _selectedSize = size;
+    });
+  }
+
+  var selectedCount = 1;
   void setSelectedCount(int count) => setState(() => selectedCount = count);
 
   @override
@@ -70,7 +77,6 @@ var selectedCount = 1;
     );
   }
 
-
   List<Widget> _getItemViews(Product item, BuildContext context, bool isMobile) {
     if (isMobile) {
       return [
@@ -119,7 +125,7 @@ var selectedCount = 1;
                       ),
                       const SizedBox(height: 16),
                       IntrinsicHeight(
-                        child: Row(children: _getSizePreview("尺寸", selectedSize, setSelectedSize),),
+                        child: Row(children: _getSizePreview(),),
                       ),
                       const SizedBox(height: 16),
                       IntrinsicHeight(
@@ -142,10 +148,86 @@ var selectedCount = 1;
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Text("實品顏色以單品照為主\n棉 100%\n厚薄：薄\n彈性：無\n素材產地：日本\n加工產地：中國", style: TextStyle(fontWeight: FontWeight.w500),)
+                      const Text("實品顏色以單品照為主\n棉 100%\n厚薄：薄\n彈性：無\n素材產地：日本\n加工產地：中國", style: TextStyle(fontWeight: FontWeight.w500),)
                     ],
                   ),
                 );
+  }
+
+  List<Widget> _getSizePreview() {
+    List<Widget> previews = <Widget>[];
+    previews.add(const Text("尺寸"));
+    previews.add(const VerticalDivider(thickness: 1, color: Colors.grey));
+    previews.add(const SizedBox(width: 8));
+    previews.add(
+      GestureDetector(
+        onTap: () => selectedSize = ProductSize.S,
+        child: Container(
+            height: 24,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: selectedSize == ProductSize.S? Colors.lime:Colors.blueGrey,
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.grey,
+                  offset: Offset(0.0, 1.0), //(x,y)
+                  blurRadius: 6.0,
+                ),
+              ],
+            ),
+            alignment: Alignment.center,
+            child: const Text("S", style: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600)),
+        ),
+      )
+    );
+    previews.add(const SizedBox(width: 8));
+    previews.add(
+      GestureDetector(
+        onTap: () => selectedSize = ProductSize.M,
+        child: Container(
+            height: 24,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: selectedSize == ProductSize.M? Colors.lime:Colors.blueGrey,
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.grey,
+                  offset: Offset(0.0, 1.0), //(x,y)
+                  blurRadius: 6.0,
+                ),
+              ],
+            ),
+            alignment: Alignment.center,
+            child: const Text("M", style: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600)),
+        ),
+      )
+    );
+    previews.add(const SizedBox(width: 8));
+    previews.add(
+      GestureDetector(
+        onTap: () => selectedSize = ProductSize.L,
+        child: Container(
+            height: 24,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: selectedSize == ProductSize.L? Colors.lime:Colors.blueGrey,
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.grey,
+                  offset: Offset(0.0, 1.0), //(x,y)
+                  blurRadius: 6.0,
+                ),
+              ],
+            ),
+            alignment: Alignment.center,
+            child: const Text("L", style: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600)),
+        ),
+      )
+    );
+    return previews;
   }
 }
 
@@ -158,82 +240,6 @@ List<Widget> _getColorPreview(String label, List<Color> colors) {
     previews.add(Container(width: 20, color: c));
     previews.add(const SizedBox(width: 8));
   }
-  return previews;
-}
-
-List<Widget> _getSizePreview(String label, String selectedSize, Function onTap) {
-  List<Widget> previews = <Widget>[];
-  previews.add(Text(label));
-  previews.add(const VerticalDivider(thickness: 1, color: Colors.grey));
-  previews.add(const SizedBox(width: 8));
-  previews.add(
-    GestureDetector(
-      onTap: () => onTap("S"),
-      child: Container(
-          height: 24,
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: selectedSize == "S"? Colors.lime:Colors.blueGrey,
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.grey,
-                offset: Offset(0.0, 1.0), //(x,y)
-                blurRadius: 6.0,
-              ),
-            ],
-          ),
-          alignment: Alignment.center,
-          child: const Text("S", style: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600)),
-      ),
-    )
-  );
-  previews.add(const SizedBox(width: 8));
-  previews.add(
-    GestureDetector(
-      onTap: () => onTap("M"),
-      child: Container(
-          height: 24,
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: selectedSize == "M"? Colors.lime:Colors.blueGrey,
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.grey,
-                offset: Offset(0.0, 1.0), //(x,y)
-                blurRadius: 6.0,
-              ),
-            ],
-          ),
-          alignment: Alignment.center,
-          child: const Text("M", style: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600)),
-      ),
-    )
-  );
-  previews.add(const SizedBox(width: 8));
-  previews.add(
-    GestureDetector(
-      onTap: () => onTap("L"),
-      child: Container(
-          height: 24,
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: selectedSize == "L"? Colors.lime:Colors.blueGrey,
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.grey,
-                offset: Offset(0.0, 1.0), //(x,y)
-                blurRadius: 6.0,
-              ),
-            ],
-          ),
-          alignment: Alignment.center,
-          child: const Text("L", style: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600)),
-      ),
-    )
-  );
   return previews;
 }
 
