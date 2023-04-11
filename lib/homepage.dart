@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'product.dart';
 import 'bigcard.dart';
-// import 'detailpage.dart';
-import 'item_count/view/item_detail_page.dart';
+import 'item_detail/view/item_detail_page.dart';
 import 'myappbar.dart';
 
 class MyHomePage extends StatefulWidget {
