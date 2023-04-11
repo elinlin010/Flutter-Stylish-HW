@@ -139,10 +139,14 @@ class _ItemDetailViewState extends State<ItemDetailView> {
                           child: Container(
                             height: 50,
                             alignment: Alignment.center,
-                            child: const Text(
-                              '請選擇尺寸',
-                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-                            ),
+                            child: BlocBuilder<ItemDetailCubit, Order>(
+                              builder: (context, state) {
+                                return Text(
+                                  () { return state.size == Size.DEFAULT? '請選擇尺寸' : '你已選擇 ${state.size.name!}';} (),
+                                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                                );
+                              }
+                            )
                           )
                         ),
                       ),
@@ -170,26 +174,26 @@ class _ItemDetailViewState extends State<ItemDetailView> {
     return GestureDetector(
       onTap: () => context.read<ItemDetailCubit>().setSize(size),
       child: BlocBuilder<ItemDetailCubit, Order>(
-                    builder: (context, state) {
-                      return Container(
-                        height: 24,
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: state.size == size? Colors.lime:Colors.blueGrey,
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Colors.grey,
-                              offset: Offset(0.0, 1.0), //(x,y)
-                              blurRadius: 6.0,
-                            ),
-                          ],
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(size.name, style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600)),
-                    );
-                    },
-                  ),
+        builder: (context, state) {
+          return Container(
+            height: 24,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: state.size == size? Colors.lime:Colors.blueGrey,
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.grey,
+                  offset: Offset(0.0, 1.0), //(x,y)
+                  blurRadius: 6.0,
+                ),
+              ],
+            ),
+            alignment: Alignment.center,
+            child: Text(size.name, style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600)),
+        );
+        },
+      ),
     );
   }
 
