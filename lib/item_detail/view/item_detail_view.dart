@@ -1,31 +1,30 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../cubit/item_detail_cubit.dart';
+
+/// {@template counter_view}
+/// A [StatelessWidget] which reacts to the provided
+/// [ItemDetailCubit] state and notifies it in response to user input.
+/// {@endtemplate}
+
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_week_1/product.dart';
 
-import 'myappbar.dart';
+import '../../myappbar.dart';
 
 
-class ItemDetailPage extends StatefulWidget {
-  const ItemDetailPage({super.key, required this.item});
+class ItemDetailView extends StatefulWidget {
+  const ItemDetailView({super.key, required this.item});
 
   final Product item;
 
   @override
-  State<ItemDetailPage> createState() => _ItemDetailPageState();
+  State<ItemDetailView> createState() => _ItemDetailViewState();
 }
 
-enum ProductSize { DEFAULT, S, M, L }
-
-class _ItemDetailPageState extends State<ItemDetailPage> {
-
-  ProductSize get selectedSize => _selectedSize;
-  var _selectedSize = ProductSize.DEFAULT;
-  set selectedSize(ProductSize size) => setState(() => _selectedSize = size);
-
-  int get selectedCount => _selectedCount;
-  var _selectedCount = 1;
-  set selectedCount(int count) => setState(() =>_selectedCount = count);
+class _ItemDetailViewState extends State<ItemDetailView> {
 
   @override
   Widget build(BuildContext context) {
@@ -140,10 +139,14 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                           child: Container(
                             height: 50,
                             alignment: Alignment.center,
-                            child: const Text(
-                              '請選擇尺寸',
-                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-                            ),
+                            child: BlocBuilder<ItemDetailCubit, Order>(
+                              builder: (context, state) {
+                                return Text(
+                                  () { return state.size == Size.DEFAULT? '請選擇尺寸' : '你已選擇 ${state.size.name!}';} (),
+                                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                                );
+                              }
+                            )
                           )
                         ),
                       ),
@@ -159,33 +162,37 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
     previews.add(const Text("尺寸"));
     previews.add(const VerticalDivider(thickness: 1, color: Colors.grey));
     previews.add(const SizedBox(width: 8));
-    previews.add(createSizeBox(ProductSize.S));
+    previews.add(createSizeBox(Size.S));
     previews.add(const SizedBox(width: 8));
-    previews.add(createSizeBox(ProductSize.M));
+    previews.add(createSizeBox(Size.M));
     previews.add(const SizedBox(width: 8));
-    previews.add(createSizeBox(ProductSize.L));
+    previews.add(createSizeBox(Size.L));
     return previews;
   }
 
-  GestureDetector createSizeBox(ProductSize size) {
+  GestureDetector createSizeBox(Size size) {
     return GestureDetector(
-      onTap: () => selectedSize = size,
-      child: Container(
-          height: 24,
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: selectedSize == size? Colors.lime:Colors.blueGrey,
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.grey,
-                offset: Offset(0.0, 1.0), //(x,y)
-                blurRadius: 6.0,
-              ),
-            ],
-          ),
-          alignment: Alignment.center,
-          child: Text(size.name, style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600)),
+      onTap: () => context.read<ItemDetailCubit>().setSize(size),
+      child: BlocBuilder<ItemDetailCubit, Order>(
+        builder: (context, state) {
+          return Container(
+            height: 24,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: state.size == size? Colors.lime:Colors.blueGrey,
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.grey,
+                  offset: Offset(0.0, 1.0), //(x,y)
+                  blurRadius: 6.0,
+                ),
+              ],
+            ),
+            alignment: Alignment.center,
+            child: Text(size.name, style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600)),
+        );
+        },
       ),
     );
   }
@@ -213,7 +220,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               GestureDetector(
-                onTap: () => selectedCount == 0? {} : selectedCount--,
+                onTap: () => context.read<ItemDetailCubit>().decrement(),
                 child: Container(
                     height: 24,
                     width: 24,
@@ -235,18 +242,22 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
               Flexible(
                 child: SizedBox(
                   height: 24,
-                  child: TextField(
-                    textAlign: TextAlign.center,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(borderSide: BorderSide.none),
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                    controller: TextEditingController()..text = selectedCount.toString(),
+                  child: BlocBuilder<ItemDetailCubit, Order>(
+                    builder: (context, state) {
+                      return TextField(
+                        textAlign: TextAlign.center,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(borderSide: BorderSide.none),
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                        controller: TextEditingController()..text = state.count.toString(),
+                      );
+                    },
                   ),
                 ),
               ),
               GestureDetector(
-                onTap: () => selectedCount++,
+                onTap: () => context.read<ItemDetailCubit>().increment(),
                 child: Container(
                     height: 24,
                     width: 24,
@@ -264,7 +275,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                     alignment: Alignment.center,
                     child: const Text("+", style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w600)),
                 ),
-          ),
+              ),
             ],
           ),
         ),
@@ -273,3 +284,32 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
     return previews;
   }
 }
+
+
+// Scaffold(
+//       appBar: AppBar(title: const Text('Counter')),
+//       body: Center(
+//         child: BlocBuilder<CounterCubit, int>(
+//           builder: (context, state) {
+//             return Text('$state', style: textTheme.displayMedium);
+//           },
+//         ),
+//       ),
+//       floatingActionButton: Column(
+//         mainAxisAlignment: MainAxisAlignment.end,
+//         crossAxisAlignment: CrossAxisAlignment.end,
+//         children: <Widget>[
+//           FloatingActionButton(
+//             key: const Key('counterView_increment_floatingActionButton'),
+//             child: const Icon(Icons.add),
+//             onPressed: () => context.read<CounterCubit>().increment(),
+//           ),
+//           const SizedBox(height: 8),
+//           FloatingActionButton(
+//             key: const Key('counterView_decrement_floatingActionButton'),
+//             child: const Icon(Icons.remove),
+//             onPressed: () => context.read<CounterCubit>().decrement(),
+//           ),
+//         ],
+//       ),
+//     );
