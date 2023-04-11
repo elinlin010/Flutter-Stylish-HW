@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 
 import 'product.dart';
 import 'bigcard.dart';
-import 'detailpage.dart';
+// import 'detailpage.dart';
+import 'item_count/view/item_detail_page.dart';
 import 'myappbar.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -238,6 +239,7 @@ class ItemCard extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
+              // builder: (context) => ItemDetailPage(item: item),
               builder: (context) => ItemDetailPage(item: item),
             )
           );
