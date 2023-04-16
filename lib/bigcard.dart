@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 class BigCard extends StatelessWidget {
   const BigCard({
     super.key,
-    required this.campaign,
+    required this.campaignURL,
   });
 
-  final AssetImage campaign;
+  final String campaignURL;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class BigCard extends StatelessWidget {
           width: 328,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              image: DecorationImage(image: campaign, fit: BoxFit.fill))),
+              image: DecorationImage(image: NetworkImage(campaignURL), fit: BoxFit.fitHeight))),
     );
   }
 }

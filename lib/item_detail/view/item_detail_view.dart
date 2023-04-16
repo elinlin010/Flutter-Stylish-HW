@@ -10,7 +10,7 @@ import '../cubit/item_detail_cubit.dart';
 
 import 'dart:io';
 
-import 'package:flutter_week_1/product.dart';
+import 'package:flutter_week_1/models/product.dart';
 
 import '../../myappbar.dart';
 
@@ -142,7 +142,7 @@ class _ItemDetailViewState extends State<ItemDetailView> {
                             child: BlocBuilder<ItemDetailCubit, Order>(
                               builder: (context, state) {
                                 return Text(
-                                  () { return state.size == Size.DEFAULT? '請選擇尺寸' : '你已選擇 ${state.size.name!}';} (),
+                                  () { return state.size == Size.DEFAULT? '請選擇尺寸' : '你已選擇 ${state.size.name}';} (),
                                   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
                                 );
                               }

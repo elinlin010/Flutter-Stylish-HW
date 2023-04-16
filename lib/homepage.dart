@@ -1,8 +1,12 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_week_1/models/campaign.dart';
+import 'package:http/http.dart' as http;
 
-import 'product.dart';
+import 'models/product.dart';
 import 'bigcard.dart';
 import 'item_detail/view/item_detail_page.dart';
 import 'myappbar.dart';
@@ -18,35 +22,68 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final campaignImages = _getCampaigns();
-  final lists = _getProductLists();
+  // late Future<List<AssetImage>> campaignImages;
+  late Future<List<Campaign>> campaigns;
+  late Future<List<ProductList>> lists;
+
+  @override
+  void initState() {
+    super.initState();
+    campaigns = _fetchCampaignsfromWeb();
+    lists = _fetchProductLists();
+  }
 
   @override
   Widget build(BuildContext context) {
-    var campaigns = <Widget>[];
-
-    for (var image in campaignImages) {
-      campaigns.add(BigCard(campaign: image,));
-    }
+    var campaignCards = <Widget>[];
 
     return Scaffold(
-      appBar: const MyAppBar(),
-      body: Column(
-        children: [
-          SizedBox(
-            height: 220,
-            child: ListView(
-              // This next line does the trick.
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              children: [for (var campaign in campaigns) campaign],
+        appBar: const MyAppBar(),
+        body: Column(
+          children: [
+              FutureBuilder<List<Campaign>>(
+                future: campaigns,
+                builder: (context, fetchedCampaigns) {
+                  if (fetchedCampaigns.hasData) {
+                    for (var campaign in fetchedCampaigns.data!) {
+                      campaignCards.add(BigCard(campaignURL: campaign.pictureURL,));
+                    }
+                    return SizedBox(
+                      height: 220,
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        children: [for (var campaign in campaignCards) campaign],
+                      )
+                    );
+                  } else if (fetchedCampaigns.hasError) {
+                    return Text('${fetchedCampaigns.error}');
+                  }
+    
+                  // By default, show a loading spinner.
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                    child: CircularProgressIndicator(),
+                  );
+                },
             ),
-          ),
-          Platform.isIOS || Platform.isAndroid
-              ? VerticalCatalogs(lists: lists)
-              : HorizontalCatalogs(lists: lists),
-        ],
-      ),
+            FutureBuilder<List<ProductList>>(
+                future: lists,
+                builder: (context, fetchedLists) {
+                  if (fetchedLists.hasData) {
+                    return Platform.isIOS || Platform.isAndroid ?
+                      VerticalCatalogs(lists: fetchedLists.data!)
+                      : HorizontalCatalogs(lists: fetchedLists.data!);
+                  } else if (fetchedLists.hasError) {
+                    return Text('${fetchedLists.error}');
+                  }
+    
+                  // By default, show a loading spinner.
+                  return const CircularProgressIndicator();
+                },
+              )
+          ],
+        ),
     );
   }
 }
@@ -253,17 +290,32 @@ class ProductList {
   final List<Product> products;
 }
 
-List<AssetImage> _getCampaigns() {
-  return <AssetImage>[
+Future<List<AssetImage>> _fetchCampaigns() async {
+  return Future.value(<AssetImage>[
     const AssetImage('assets/demo_image.jpeg'),
     const AssetImage('assets/demo_image.jpeg'),
     const AssetImage('assets/demo_image.jpeg'),
     const AssetImage('assets/demo_image.jpeg'),
     const AssetImage('assets/demo_image.jpeg'),
-  ];
+  ]);
 }
 
-List<ProductList> _getProductLists() {
+Future<List<Campaign>> _fetchCampaignsfromWeb() async {
+  final response = await http.get(Uri.parse('https://api.appworks-school.tw/api/1.0/marketing/campaigns'));
+
+  //runs expensive functions in a background isolate and returns the result
+  return compute(_parseCampaigns, response);
+}
+
+List<Campaign> _parseCampaigns(http.Response response) {
+  var campaignObjs = jsonDecode(response.body)['data'] as List;
+  
+  return campaignObjs.map(
+    (campaignJson) => Campaign.fromJson(campaignJson)
+  ).toList();
+}
+
+Future<List<ProductList>> _fetchProductLists() async {
   List<ProductList> allProductLists = <ProductList>[];
   ProductList women = ProductList(typeName: "女裝", products: _getProducts());
   ProductList men = ProductList(typeName: "男裝", products: _getProducts());
@@ -274,7 +326,7 @@ List<ProductList> _getProductLists() {
   allProductLists.add(men);
   allProductLists.add(accessories);
 
-  return allProductLists;
+  return Future.value(allProductLists);
 }
 
 List<Product> _getProducts() {
