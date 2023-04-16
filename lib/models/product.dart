@@ -60,7 +60,7 @@ class ProductColor {
   }
 }
 
-enum ProductSize { S, M, L }
+enum ProductSize { F, S, M, L, XL }
 
 class Variant {
   Variant({required this.colorCode, required this.size, required this.stock});

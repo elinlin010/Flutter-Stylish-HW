@@ -322,7 +322,7 @@ List<Campaign> _parseCampaigns(http.Response response) {
 // }
 
 Future<List<ProductList>> _fetchProductListsfromWeb() async {
-  final results = await Future.wait([_fetchWomenProducts(), _fetchWomenProducts(), _fetchWomenProducts()]);
+  final results = await Future.wait([_fetchWomenProducts(), _fetchMenProducts(), _fetchAccessoriesProducts()]);
 
   List<ProductList> allProductLists = <ProductList>[];
   allProductLists.add(results[0]);
@@ -332,34 +332,37 @@ Future<List<ProductList>> _fetchProductListsfromWeb() async {
   return allProductLists;
 }
 
-// List<Product> _getProducts() {
-//   List<Product> products = List<Product>.generate(
-//       8,
-//       (i) => const Product(
-//           imgUrl: "assets/demo_image.jpeg",
-//           name: "UNIQLO 特級極輕羽絨外套",
-//           id: "2023032101",
-//           price: 323,
-//           fiat: "NT\$",
-//           colors: [Colors.green, Colors.black]));
-
-//   return products;
-// }
-
 Future<ProductList> _fetchWomenProducts() async {
   final response = await http.get(Uri.parse('https://api.appworks-school.tw/api/1.0/products/women'));
 
   //runs expensive functions in a background isolate and returns the result
-  return compute(_parseProducts, response);
+  return compute(_parseProducts, {'name':'女裝', 'response':response});
 }
 
-ProductList _parseProducts(http.Response response) {
+Future<ProductList> _fetchMenProducts() async {
+  final response = await http.get(Uri.parse('https://api.appworks-school.tw/api/1.0/products/men'));
+
+  //runs expensive functions in a background isolate and returns the result
+  return compute(_parseProducts, {'name':'男裝', 'response':response});
+}
+
+Future<ProductList> _fetchAccessoriesProducts() async {
+  final response = await http.get(Uri.parse('https://api.appworks-school.tw/api/1.0/products/accessories'));
+
+  //runs expensive functions in a background isolate and returns the result
+  return compute(_parseProducts, {'name':'配件', 'response':response});
+}
+
+ProductList _parseProducts(Map<String, dynamic> map) {
+  String category = map['name'];
+  http.Response response = map['response'];
+
   var decodeJson = jsonDecode(response.body);
   var productObjs = decodeJson['data'] as List;
   var nextPage = decodeJson['next_paging'] as int?;
   
   return ProductList(
-    categoryName: '女裝',
+    categoryName: category,
     products: productObjs.map(
       (productJson) => Product.fromJson(productJson)
     ).toList(),
