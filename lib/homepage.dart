@@ -30,7 +30,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     campaigns = _fetchCampaignsfromWeb();
-    lists = _fetchProductLists();
+    lists = _fetchProductListsfromWeb();
   }
 
   @override
@@ -105,7 +105,7 @@ class VerticalCatalogs extends StatelessWidget {
         if (i == 0) {
           allLists.add(Center(
               child: Text(
-            list.typeName,
+            list.categoryName,
             style: Theme.of(context).textTheme.titleMedium,
           )));
         } else {
@@ -160,7 +160,7 @@ class HorizontalCatalogs extends StatelessWidget {
                     var list = lists[0];
                     if (i == 0) {
                       return Text(
-                        list.typeName,
+                        list.categoryName,
                         style: Theme.of(context).textTheme.titleMedium,
                       );
                     } else {
@@ -183,7 +183,7 @@ class HorizontalCatalogs extends StatelessWidget {
                     var list = lists[1];
                     if (i == 0) {
                       return Text(
-                        list.typeName,
+                        list.categoryName,
                         style: Theme.of(context).textTheme.titleMedium,
                       );
                     } else {
@@ -205,7 +205,7 @@ class HorizontalCatalogs extends StatelessWidget {
                     var list = lists[2];
                     if (i == 0) {
                       return Text(
-                        list.typeName,
+                        list.categoryName,
                         style: Theme.of(context).textTheme.titleMedium,
                       );
                     } else {
@@ -249,7 +249,7 @@ class ItemCard extends StatelessWidget {
                         bottomLeft: Radius.circular(10),
                       ),
                       image: DecorationImage(
-                          image: AssetImage(item.imgUrl), fit: BoxFit.cover),
+                          image: NetworkImage(item.mainImgUrl), fit: BoxFit.cover),
                     )),
                 const SizedBox(
                   width: 16,
@@ -259,7 +259,7 @@ class ItemCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          item.name,
+                          item.title,
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         Text(
@@ -283,22 +283,15 @@ class ItemCard extends StatelessWidget {
   }
 }
 
-class ProductList {
-  const ProductList({required this.typeName, required this.products});
-
-  final String typeName;
-  final List<Product> products;
-}
-
-Future<List<AssetImage>> _fetchCampaigns() async {
-  return Future.value(<AssetImage>[
-    const AssetImage('assets/demo_image.jpeg'),
-    const AssetImage('assets/demo_image.jpeg'),
-    const AssetImage('assets/demo_image.jpeg'),
-    const AssetImage('assets/demo_image.jpeg'),
-    const AssetImage('assets/demo_image.jpeg'),
-  ]);
-}
+// Future<List<AssetImage>> _fetchCampaigns() async {
+//   return Future.value(<AssetImage>[
+//     const AssetImage('assets/demo_image.jpeg'),
+//     const AssetImage('assets/demo_image.jpeg'),
+//     const AssetImage('assets/demo_image.jpeg'),
+//     const AssetImage('assets/demo_image.jpeg'),
+//     const AssetImage('assets/demo_image.jpeg'),
+//   ]);
+// }
 
 Future<List<Campaign>> _fetchCampaignsfromWeb() async {
   final response = await http.get(Uri.parse('https://api.appworks-school.tw/api/1.0/marketing/campaigns'));
@@ -315,30 +308,61 @@ List<Campaign> _parseCampaigns(http.Response response) {
   ).toList();
 }
 
-Future<List<ProductList>> _fetchProductLists() async {
+// Future<List<ProductList>> _fetchProductLists() async {
+//   List<ProductList> allProductLists = <ProductList>[];
+//   ProductList women = ProductList(categoryName: "女裝", products: _getProducts());
+//   ProductList men = ProductList(categoryName: "男裝", products: _getProducts());
+//   ProductList accessories = ProductList(categoryName: "配件", products: _getProducts());
+
+//   allProductLists.add(women);
+//   allProductLists.add(men);
+//   allProductLists.add(accessories);
+
+//   return Future.value(allProductLists);
+// }
+
+Future<List<ProductList>> _fetchProductListsfromWeb() async {
+  final results = await Future.wait([_fetchWomenProducts(), _fetchWomenProducts(), _fetchWomenProducts()]);
+
   List<ProductList> allProductLists = <ProductList>[];
-  ProductList women = ProductList(typeName: "女裝", products: _getProducts());
-  ProductList men = ProductList(typeName: "男裝", products: _getProducts());
-  ProductList accessories =
-      ProductList(typeName: "配件", products: _getProducts());
+  allProductLists.add(results[0]);
+  allProductLists.add(results[1]);
+  allProductLists.add(results[2]);
 
-  allProductLists.add(women);
-  allProductLists.add(men);
-  allProductLists.add(accessories);
-
-  return Future.value(allProductLists);
+  return allProductLists;
 }
 
-List<Product> _getProducts() {
-  List<Product> products = List<Product>.generate(
-      8,
-      (i) => const Product(
-          imgUrl: "assets/demo_image.jpeg",
-          name: "UNIQLO 特級極輕羽絨外套",
-          id: "2023032101",
-          price: 323,
-          fiat: "NT\$",
-          colors: [Colors.green, Colors.black]));
+// List<Product> _getProducts() {
+//   List<Product> products = List<Product>.generate(
+//       8,
+//       (i) => const Product(
+//           imgUrl: "assets/demo_image.jpeg",
+//           name: "UNIQLO 特級極輕羽絨外套",
+//           id: "2023032101",
+//           price: 323,
+//           fiat: "NT\$",
+//           colors: [Colors.green, Colors.black]));
 
-  return products;
+//   return products;
+// }
+
+Future<ProductList> _fetchWomenProducts() async {
+  final response = await http.get(Uri.parse('https://api.appworks-school.tw/api/1.0/products/women'));
+
+  //runs expensive functions in a background isolate and returns the result
+  return compute(_parseProducts, response);
+}
+
+ProductList _parseProducts(http.Response response) {
+  var decodeJson = jsonDecode(response.body);
+  var productObjs = decodeJson['data'] as List;
+  var nextPage = decodeJson['next_paging'] as int?;
+  
+  return ProductList(
+    categoryName: '女裝',
+    products: productObjs.map(
+      (productJson) => Product.fromJson(productJson)
+    ).toList(),
+    nextPage: nextPage
+  );
 }

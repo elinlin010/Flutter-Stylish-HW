@@ -77,13 +77,13 @@ class _ItemDetailViewState extends State<ItemDetailView> {
   List<Widget> _getItemViews(BuildContext context, bool isMobile) {
     if (isMobile) {
       return [
-        Image(image: AssetImage(widget.item.imgUrl)),
+        Image(image: NetworkImage(widget.item.mainImgUrl)),
         const SizedBox(height: 10),
         createDetailView(context),
       ];
     } else {
       return [
-        Expanded(flex: 5, child: Image(image: AssetImage(widget.item.imgUrl))),
+        Expanded(flex: 5, child: Image(image: NetworkImage(widget.item.mainImgUrl))),
         const SizedBox(width: 10),
         Expanded(flex: 5, child: createDetailView(context)),
       ];
@@ -98,12 +98,12 @@ class _ItemDetailViewState extends State<ItemDetailView> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        item.name,
+                        item.title,
                         textAlign: TextAlign.left,
                         style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        item.id,
+                        item.id.toString(),
                         textAlign: TextAlign.left,
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
@@ -203,7 +203,7 @@ class _ItemDetailViewState extends State<ItemDetailView> {
     previews.add(const VerticalDivider(thickness: 1, color: Colors.grey));
     for (var c in widget.item.colors) {
       previews.add(const SizedBox(width: 8));
-      previews.add(Container(width: 20, color: c));
+      previews.add(Container(width: 20, color: Color(int.parse("0xFF${c.colorCode}"))));
       previews.add(const SizedBox(width: 8));
     }
     return previews;
