@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_week_1/models/campaign.dart';
@@ -23,7 +24,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // late Future<List<AssetImage>> campaignImages;
   late Future<List<Campaign>> campaigns;
   late Future<List<ProductList>> lists;
 
@@ -64,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   // By default, show a loading spinner.
                   return const Padding(
                     padding: EdgeInsets.symmetric(vertical: 8.0),
-                    child: CircularProgressIndicator(),
+                    child: Center(child: CircularProgressIndicator()),
                   );
                 },
             ),
@@ -241,17 +241,31 @@ class ItemCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Container(
-                    height: 120,
-                    width: 80,
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(10),
-                        bottomLeft: Radius.circular(10),
+                SizedBox(
+                  height: 120,
+                  width: 80,
+                  child: CachedNetworkImage(
+                    imageUrl: item.mainImgUrl,
+                    imageBuilder: (context, imageProvider) => Container(
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      bottomLeft: Radius.circular(10),
+                    ),
+                        image: DecorationImage(
+                          image: imageProvider,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                      image: DecorationImage(
-                          image: NetworkImage(item.mainImgUrl), fit: BoxFit.cover),
-                    )),
+                    ),
+                    progressIndicatorBuilder: (context, url, progress) => Center(
+                      child: CircularProgressIndicator(
+                        value: progress.progress,
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                  )
+                ),
                 const SizedBox(
                   width: 16,
                 ),
