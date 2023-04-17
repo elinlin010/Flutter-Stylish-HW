@@ -1,3 +1,7 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'product.g.dart';
+
 class ProductList {
   ProductList({required this.categoryName, required this.products, this.nextPage});
 
@@ -6,72 +10,72 @@ class ProductList {
   final int? nextPage;
 }
 
+@JsonSerializable()
 class Product {
 
-  Product({required this.id, required this.category, required this.title, required this.description, required this.price, required this.fiat, required this.texture, required this.wash, required this.place, required this.note, required this.story, required this.mainImgUrl, required this.imageURLs, required this.variants, required this.colors, required this.sizes});
+  Product({required this.id, required this.category, required this.title, required this.description, required this.price, required this.texture, required this.wash, required this.place, required this.note, required this.story, required this.mainImgUrl, required this.imageURLs, required this.variants, required this.colors, required this.sizes});
 
   final int id;
   final String category;
   final String title;
   final String description;
   final int price;
-  final String fiat;
   final String texture;
   final String wash;
   final String place;
   final String note;
   final String story;
+
+  @JsonKey(name: 'main_image')
   final String mainImgUrl;
+
+  @JsonKey(includeFromJson: false, includeToJson: false, includeIfNull: false)
+  final String fiat = 'NT\$';
+
+  @JsonKey(name: 'images')
   final List<String> imageURLs;
   final List<Variant> variants;
   final List<ProductColor> colors;
   final List<ProductSize> sizes;
 
-  factory Product.fromJson(Map<String, dynamic> json) {
-    return Product(
-      id: json['id'],
-      category: json['category'],
-      title: json['title'],
-      description: json['description'],
-      price: json['price'],
-      fiat: 'NT\$',
-      texture: json['texture'],
-      wash: json['wash'],
-      place: json['place'],
-      note: json['note'],
-      story: json['story'],
-      mainImgUrl: json['main_image'],
-      imageURLs: (json['images'] as List).map((image) => image.toString()).toList(),
-      variants: (json['variants'] as List).map((variant) => Variant.fromJson(variant)).toList(),
-      colors: (json['colors'] as List).map((color) => ProductColor.fromJSON(color)).toList(),
-      sizes: (json['sizes'] as List).map((size) => ProductSize.values.byName(size)).toList(),
-    );
-  }
+  factory Product.fromJson(Map<String, dynamic> json) => _$ProductFromJson(json);
+  Map<String, dynamic> toJson() => _$ProductToJson(this);
 }
 
+@JsonSerializable()
 class ProductColor {
   ProductColor({required this.colorCode, required this.name});
 
+  @JsonKey(name: 'code')
   final String colorCode;
+  
   final String name;
 
-  factory ProductColor.fromJSON(Map<String, dynamic> json) {
-    return ProductColor(colorCode: json['code'], name: json['name']);
-  }
+  factory ProductColor.fromJson(Map<String, dynamic> json) => _$ProductColorFromJson(json);
+  Map<String, dynamic> toJson() => _$ProductColorToJson(this);
 }
 
-enum ProductSize { F, S, M, L, XL }
+enum ProductSize {
+  @JsonValue("F") F,
+  @JsonValue("S") S,
+  @JsonValue("M") M,
+  @JsonValue("L") L,
+  @JsonValue("XL") XL
+}
 
+@JsonSerializable()
 class Variant {
   Variant({required this.colorCode, required this.size, required this.stock});
 
+  @JsonKey(name: 'color_code')
   final String colorCode;
+
   final ProductSize size;
+
   final int stock;
 
-  factory Variant.fromJson(Map<String, dynamic> json) {
-    return Variant(colorCode: json['color_code'], size: ProductSize.values.byName(json['size']), stock: json['stock']);
-  }
+  factory Variant.fromJson(Map<String, dynamic> json) => _$VariantFromJson(json);
+  Map<String, dynamic> toJson() => _$VariantToJson(this);
 }
 
 // {

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -294,10 +295,29 @@ class ItemCard extends StatelessWidget {
 // }
 
 Future<List<Campaign>> _fetchCampaignsfromWeb() async {
-  final response = await http.get(Uri.parse('https://api.appworks-school.tw/api/1.0/marketing/campaigns'));
+  try {
+    final response = await http.get(Uri.parse('https://api.appworks-school.tw/api/1.0/marketing/campaigns'));
+    return compute(_parseCampaigns, response);
+  } catch (e) {
+    if(e is SocketException) {
+      //treat SocketException
+      // ignore: avoid_print
+      print("Socket exception: ${e.toString()}");
+    }
+    else if(e is TimeoutException) {
+      //treat TimeoutException
+      // ignore: avoid_print
+      print("Timeout exception: ${e.toString()}");
+    }
+    else {
+      // ignore: avoid_print
+      print("Unhandled exception: ${e.toString()}");
+    }
+    return Future.value(<Campaign>[]);
+  }
 
   //runs expensive functions in a background isolate and returns the result
-  return compute(_parseCampaigns, response);
+  
 }
 
 List<Campaign> _parseCampaigns(http.Response response) {
@@ -322,14 +342,32 @@ List<Campaign> _parseCampaigns(http.Response response) {
 // }
 
 Future<List<ProductList>> _fetchProductListsfromWeb() async {
-  final results = await Future.wait([_fetchWomenProducts(), _fetchMenProducts(), _fetchAccessoriesProducts()]);
+  try {
+    final results = await Future.wait([_fetchWomenProducts(), _fetchMenProducts(), _fetchAccessoriesProducts()]);
 
-  List<ProductList> allProductLists = <ProductList>[];
-  allProductLists.add(results[0]);
-  allProductLists.add(results[1]);
-  allProductLists.add(results[2]);
+    List<ProductList> allProductLists = <ProductList>[];
+    allProductLists.add(results[0]);
+    allProductLists.add(results[1]);
+    allProductLists.add(results[2]);
 
-  return allProductLists;
+    return allProductLists;
+  } catch (e) {
+    if(e is SocketException) {
+      //treat SocketException
+      // ignore: avoid_print
+      print("Socket exception: ${e.toString()}");
+    }
+    else if(e is TimeoutException) {
+      //treat TimeoutException
+      // ignore: avoid_print
+      print("Timeout exception: ${e.toString()}");
+    }
+    else {
+      // ignore: avoid_print
+      print("Unhandled exception: ${e.toString()}");
+    }
+    return Future.value(<ProductList>[]);
+  }
 }
 
 Future<ProductList> _fetchWomenProducts() async {

@@ -1,8 +1,17 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'campaign.g.dart';
+
+@JsonSerializable()
 class Campaign {
   final int id;
-  final int productId;
-  final String pictureURL;
   final String story;
+
+  @JsonKey(name: 'product_id')
+  final int productId;
+
+  @JsonKey(name: 'picture')
+  final String pictureURL;
 
   const Campaign ({
     required this.id,
@@ -11,14 +20,8 @@ class Campaign {
     required this.story,
   });
 
-  factory Campaign.fromJson(Map<String, dynamic> json) {
-    return Campaign(
-      id: json['id'],
-      productId: json['product_id'],
-      pictureURL: json['picture'],
-      story: json['story'],
-    );
-  }
+  factory Campaign.fromJson(Map<String, dynamic> json) => _$CampaignFromJson(json);
+  Map<String, dynamic> toJson() => _$CampaignToJson(this);
 }
 
 // {
