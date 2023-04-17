@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -77,13 +78,32 @@ class _ItemDetailViewState extends State<ItemDetailView> {
   List<Widget> _getItemViews(BuildContext context, bool isMobile) {
     if (isMobile) {
       return [
-        Image(image: NetworkImage(widget.item.mainImgUrl)),
+        CachedNetworkImage(
+          imageUrl: widget.item.mainImgUrl,
+          progressIndicatorBuilder: (context, url, progress) => Center(
+            child: CircularProgressIndicator(
+              value: progress.progress,
+            ),
+          ),
+          errorWidget: (context, url, error) => const Icon(Icons.error),
+        ),
         const SizedBox(height: 10),
         createDetailView(context),
       ];
     } else {
       return [
-        Expanded(flex: 5, child: Image(image: NetworkImage(widget.item.mainImgUrl))),
+        Expanded(
+          flex: 5,
+          child: CachedNetworkImage(
+            imageUrl: widget.item.mainImgUrl,
+            progressIndicatorBuilder: (context, url, progress) => Center(
+              child: CircularProgressIndicator(
+                value: progress.progress,
+              ),
+            ),
+            errorWidget: (context, url, error) => const Icon(Icons.error),
+          ),
+        ),
         const SizedBox(width: 10),
         Expanded(flex: 5, child: createDetailView(context)),
       ];
@@ -93,68 +113,68 @@ class _ItemDetailViewState extends State<ItemDetailView> {
   Padding createDetailView(BuildContext context) {
     var item = widget.item;
     return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        item.title,
-                        textAlign: TextAlign.left,
-                        style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        item.id.toString(),
-                        textAlign: TextAlign.left,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        "${item.fiat} ${item.price}",
-                        textAlign: TextAlign.left,
-                        style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 12.0),
-                        child: Divider(),
-                      ),
-                      IntrinsicHeight(
-                        child: Row(
-                          children: _getColorPreview(),),
-                      ),
-                      const SizedBox(height: 16),
-                      IntrinsicHeight(
-                        child: Row(children: _getSizePreview(),),
-                      ),
-                      const SizedBox(height: 16),
-                      IntrinsicHeight(
-                        child: Row(children: _getCountPreview(),),
-                      ),
-                      const SizedBox(height: 16),
-                      Material(
-                        color: Colors.black87,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(0),
-                          hoverColor: Colors.white24,
-                          onTap: (){},
-                          child: Container(
-                            height: 50,
-                            alignment: Alignment.center,
-                            child: BlocBuilder<ItemDetailCubit, Order>(
-                              builder: (context, state) {
-                                return Text(
-                                  () { return state.size == Size.DEFAULT? '請選擇尺寸' : '你已選擇 ${state.size.name}';} (),
-                                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-                                );
-                              }
-                            )
-                          )
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text("實品顏色以單品照為主\n棉 100%\n厚薄：薄\n彈性：無\n素材產地：日本\n加工產地：中國", style: TextStyle(fontWeight: FontWeight.w500),)
-                    ],
-                  ),
-                );
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            item.title,
+            textAlign: TextAlign.left,
+            style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
+          ),
+          Text(
+            item.id.toString(),
+            textAlign: TextAlign.left,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 24),
+          Text(
+            "${item.fiat} ${item.price}",
+            textAlign: TextAlign.left,
+            style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 12.0),
+            child: Divider(),
+          ),
+          IntrinsicHeight(
+            child: Row(
+              children: _getColorPreview(),),
+          ),
+          const SizedBox(height: 16),
+          IntrinsicHeight(
+            child: Row(children: _getSizePreview(),),
+          ),
+          const SizedBox(height: 16),
+          IntrinsicHeight(
+            child: Row(children: _getCountPreview(),),
+          ),
+          const SizedBox(height: 16),
+          Material(
+            color: Colors.black87,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(0),
+              hoverColor: Colors.white24,
+              onTap: (){},
+              child: Container(
+                height: 50,
+                alignment: Alignment.center,
+                child: BlocBuilder<ItemDetailCubit, Order>(
+                  builder: (context, state) {
+                    return Text(
+                      () { return state.size == Size.DEFAULT? '請選擇尺寸' : '你已選擇 ${state.size.name}';} (),
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                    );
+                  }
+                )
+              )
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text("實品顏色以單品照為主\n棉 100%\n厚薄：薄\n彈性：無\n素材產地：日本\n加工產地：中國", style: TextStyle(fontWeight: FontWeight.w500),)
+        ],
+      ),
+    );
   }
 
   List<Widget> _getSizePreview() {
