@@ -46,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 future: campaigns,
                 builder: (context, fetchedCampaigns) {
                   if (fetchedCampaigns.hasData) {
-                    for (var campaign in fetchedCampaigns.data!) {
+                    for (Campaign campaign in fetchedCampaigns.data!) {
                       campaignCards.add(BigCard(campaignURL: campaign.pictureURL,));
                     }
                     return SizedBox(
@@ -69,20 +69,20 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
             ),
             FutureBuilder<List<ProductList>>(
-                future: lists,
-                builder: (context, fetchedLists) {
-                  if (fetchedLists.hasData) {
-                    return Platform.isIOS || Platform.isAndroid ?
-                      VerticalCatalogs(lists: fetchedLists.data!)
-                      : HorizontalCatalogs(lists: fetchedLists.data!);
-                  } else if (fetchedLists.hasError) {
-                    return Text('${fetchedLists.error}');
-                  }
-    
-                  // By default, show a loading spinner.
-                  return const CircularProgressIndicator();
-                },
-              )
+              future: lists,
+              builder: (context, fetchedLists) {
+                if (fetchedLists.hasData) {
+                  return Platform.isIOS || Platform.isAndroid ?
+                    VerticalCatalogs(lists: fetchedLists.data!)
+                    : HorizontalCatalogs(lists: fetchedLists.data!);
+                } else if (fetchedLists.hasError) {
+                  return Text('${fetchedLists.error}');
+                }
+  
+                // By default, show a loading spinner.
+                return const CircularProgressIndicator();
+              },
+            )
           ],
         ),
     );
@@ -143,81 +143,34 @@ class HorizontalCatalogs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> allLists = <Widget>[];
+    for (var list in lists) {
+      allLists.add(
+        Flexible(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: ListView.builder(
+              // Let the ListView know how many items it needs to build.
+              itemCount: list.products.length + 1,
+              // Provide a builder function. This is where the magic happens.
+              // Convert each item into a widget based on the type of item it is.
+              itemBuilder: (context, i) {
+                if (i == 0) {
+                  return Text(
+                    list.categoryName,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  );
+                } else {
+                  return ItemCard(item: list.products[i - 1]);
+                }
+              }
+            ),
+          )
+        )
+      );
+    }
 
-    return Expanded(
-      child: Row(
-        children: [
-          Flexible(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: ListView.builder(
-                  // shrinkWrap: true,
-                  // shrinkWrap: true,
-                  // Let the ListView know how many items it needs to build.
-                  itemCount: lists[0].products.length + 1,
-                  // Provide a builder function. This is where the magic happens.
-                  // Convert each item into a widget based on the type of item it is.
-                  itemBuilder: (context, i) {
-                    var list = lists[0];
-                    if (i == 0) {
-                      return Text(
-                        list.categoryName,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      );
-                    } else {
-                      return ItemCard(item: list.products[i - 1]);
-                    }
-                  }),
-            ),
-          ),
-          Flexible(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: ListView.builder(
-                  // shrinkWrap: true,
-                  // shrinkWrap: true,
-                  // Let the ListView know how many items it needs to build.
-                  itemCount: lists[1].products.length + 1,
-                  // Provide a builder function. This is where the magic happens.
-                  // Convert each item into a widget based on the type of item it is.
-                  itemBuilder: (context, i) {
-                    var list = lists[1];
-                    if (i == 0) {
-                      return Text(
-                        list.categoryName,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      );
-                    } else {
-                      return ItemCard(item: list.products[i - 1]);
-                    }
-                  }),
-            ),
-          ),
-          Flexible(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: ListView.builder(
-                  // shrinkWrap: true,
-                  // Let the ListView know how many items it needs to build.
-                  itemCount: lists[2].products.length + 1,
-                  // Provide a builder function. This is where the magic happens.
-                  // Convert each item into a widget based on the type of item it is.
-                  itemBuilder: (context, i) {
-                    var list = lists[2];
-                    if (i == 0) {
-                      return Text(
-                        list.categoryName,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      );
-                    } else {
-                      return ItemCard(item: list.products[i - 1]);
-                    }
-                  }),
-            ),
-          ),
-        ],
-      ),
-    );
+    return Expanded(child: Row(children: allLists));
   }
 }
 

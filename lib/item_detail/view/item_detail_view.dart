@@ -60,7 +60,9 @@ class _ItemDetailViewState extends State<ItemDetailView> {
                     ),
                     const SizedBox(width: 10),
                     const Expanded(child: Divider(thickness: 1, color: Colors.grey,))
-                  ],)
+                  ],),
+                  for (var image in widget.item.imageURLs) 
+                    CachedNetworkImage(imageUrl: image)
                 ].map(
                   (e) => Padding(
                     padding: const EdgeInsets.all(10),
@@ -171,7 +173,7 @@ class _ItemDetailViewState extends State<ItemDetailView> {
             ),
           ),
           const SizedBox(height: 8),
-          const Text("實品顏色以單品照為主\n棉 100%\n厚薄：薄\n彈性：無\n素材產地：日本\n加工產地：中國", style: TextStyle(fontWeight: FontWeight.w500),)
+          const Text("實品顏色以單品照為主\n棉 100%\n厚薄：薄\n彈性：無\n素材產地：日本\n加工產地：中國", style: TextStyle(fontWeight: FontWeight.w500),),
         ],
       ),
     );
